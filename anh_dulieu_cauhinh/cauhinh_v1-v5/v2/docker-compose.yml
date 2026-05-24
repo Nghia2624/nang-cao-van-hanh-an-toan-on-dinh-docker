@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dockerdos-v2-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dockerdos
+      POSTGRES_MAX_CONNECTIONS: 10  # Yếu - 10 connections
+    volumes:
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "0.0.0.0:5433:5432"  # v2 PostgreSQL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'  # Yếu - chỉ 0.3 CPU
+          memory: 256M  # Yếu - chỉ 256MB RAM
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ulimits:
+      nofile:
+        soft: 1024  # Yếu - chỉ 1024 file descriptors
+        hard: 1024
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: dockerdos-v2-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: dockerdos
+      RATE_LIMIT: 0  # Không rate limit
+      HTTP_TIMEOUT: 0  # Không timeout
+      DB_MAX_OPEN_CONNS: 10  # Yếu - 10 connections
+      DB_MAX_IDLE_CONNS: 2  # Yếu
+      GOMAXPROCS: 1  # Chỉ 1 worker
+    ports:
+      - "0.0.0.0:8080:8080"  # v2 Backend API - bind trên tất cả interfaces
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'  # Yếu - chỉ 0.3 CPU
+          memory: 256M  # Yếu - chỉ 256MB RAM
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: 1024  # Yếu - chỉ 1024 file descriptors
+        hard: 1024
+    # v2: Vẫn chạy với quyền root
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=http://172.16.142.128:8080
+    container_name: dockerdos-v2-frontend
+    ports:
+      - "0.0.0.0:80:80"  # v2 Frontend - bind trên tất cả interfaces
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'  # Yếu - chỉ 0.2 CPU
+          memory: 128M  # Yếu - chỉ 128MB RAM
+    ulimits:
+      nofile:
+        soft: 512
+        hard: 512

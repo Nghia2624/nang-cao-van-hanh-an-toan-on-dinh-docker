@@ -1,0 +1,37 @@
+Attack Timeline - V4
+============================================================
+Target: http://172.16.142.128:8084/api/heavy
+Concurrency: 50
+Total Requests: 1000
+
+Timeline:
+
+[2026-01-4 01:00:00] Request #50 sent (interval: 12.63s)
+[2026-01-4 01:00:12] Request #100 sent (interval: 12.63s)
+[2026-01-4 01:00:25] Request #150 sent (interval: 12.63s)
+[2026-01-4 01:00:37] Request #200 sent (interval: 12.63s)
+[2026-01-4 01:00:50] Request #250 sent (interval: 12.63s)
+[2026-01-4 01:01:03] Request #300 sent (interval: 12.63s)
+[2026-01-4 01:01:15] Request #350 sent (interval: 12.63s)
+[2026-01-4 01:01:28] Request #400 sent (interval: 12.63s)
+[2026-01-4 01:01:41] Request #450 sent (interval: 12.63s)
+[2026-01-4 01:01:53] Request #500 sent (interval: 12.63s)
+[2026-01-4 01:02:06] Request #550 sent (interval: 12.63s)
+[2026-01-4 01:02:18] Request #600 sent (interval: 12.63s)
+[2026-01-4 01:02:31] Request #650 sent (interval: 12.63s)
+[2026-01-4 01:02:44] Request #700 sent (interval: 12.63s)
+[2026-01-4 01:02:56] Request #750 sent (interval: 12.63s)
+[2026-01-4 01:03:09] Request #800 sent (interval: 12.63s)
+[2026-01-4 01:03:22] Request #850 sent (interval: 12.63s)
+[2026-01-4 01:03:34] Request #900 sent (interval: 12.63s)
+[2026-01-4 01:03:47] Request #950 sent (interval: 12.63s)
+
+[2026-01-4 01:04:00] ⚠️  SYSTEM COLLAPSE - 950 requests
+
+Summary:
+  - First request: 2026-01-4 01:00:00
+  - Collapse time: 2026-01-4 01:04:00
+  - Total duration: 4 phút 0 giây
+  - Requests before collapse: 950
+  - Average interval: 0.25s
+  - Requests per second: 3.96

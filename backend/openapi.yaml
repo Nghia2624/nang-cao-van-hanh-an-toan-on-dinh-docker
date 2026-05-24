@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: DockerAI Monitoring API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /healthz:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: ok
+  /api/v1/containers:
+    get:
+      summary: List containers
+      responses:
+        '200':
+          description: container list
+  /api/v1/metrics/system:
+    get:
+      summary: System overview metrics
+      responses:
+        '200':
+          description: system metrics
+  /api/v1/logs/stream:
+    get:
+      summary: Stream container logs via SSE
+      parameters:
+        - in: query
+          name: container
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SSE stream
+  /api/v1/alerts:
+    get:
+      summary: List alerts
+      responses:
+        '200':
+          description: alerts list
+  /api/v1/ai/analyze:
+    post:
+      summary: Analyze a log entry with AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AIAnalyzeRequest'
+      responses:
+        '200':
+          description: analysis
+components:
+  schemas:
+    AIAnalyzeRequest:
+      type: object
+      properties:
+        log_message:
+          type: string
+        level:
+          type: string
+        container:
+          type: string

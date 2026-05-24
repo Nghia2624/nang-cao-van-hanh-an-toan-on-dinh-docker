@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dockerdos-v4-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dockerdos
+      POSTGRES_MAX_CONNECTIONS: 20  # Trung bình thấp - 20 connections
+    volumes:
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "0.0.0.0:5435:5432"  # v4 PostgreSQL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'  # Trung bình thấp - 0.5 CPU
+          memory: 512M  # Trung bình thấp - 512MB RAM
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ulimits:
+      nofile:
+        soft: 4096  # Trung bình thấp - 4096 file descriptors
+        hard: 4096
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: dockerdos-v4-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: dockerdos
+      RATE_LIMIT: 0  # Không rate limit (để dễ DoS)
+      HTTP_TIMEOUT: 30  # Timeout 30s
+      DB_MAX_OPEN_CONNS: 20  # Trung bình thấp - 20 connections
+      DB_MAX_IDLE_CONNS: 5  # Trung bình thấp
+      GOMAXPROCS: 2  # 2 workers
+    ports:
+      - "0.0.0.0:8080:8080"  # v4 Backend API - bind trên tất cả interfaces
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'  # Trung bình thấp - 0.5 CPU
+          memory: 512M  # Trung bình thấp - 512MB RAM
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: 4096  # Trung bình thấp - 4096 file descriptors
+        hard: 4096
+    # v4: Vẫn chạy với quyền root
+    # v4: Có thể thêm network delay nếu cần
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=http://172.16.142.128:8080
+    container_name: dockerdos-v4-frontend
+    ports:
+      - "0.0.0.0:80:80"  # v4 Frontend - bind trên tất cả interfaces
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'  # Trung bình thấp - 0.3 CPU
+          memory: 256M  # Trung bình thấp - 256MB RAM
+    ulimits:
+      nofile:
+        soft: 2048
+        hard: 2048

@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dockerdos-v5-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dockerdos
+      POSTGRES_MAX_CONNECTIONS: 30  # Trung bình - 30 connections
+    volumes:
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "0.0.0.0:5436:5432"  # v5 PostgreSQL
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'  # Trung bình - 1.0 CPU
+          memory: 512M  # Trung bình - 512MB RAM
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ulimits:
+      nofile:
+        soft: 8192  # Trung bình - 8192 file descriptors
+        hard: 8192
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: dockerdos-v5-backend
+    user: "1000:1000"  # Chạy với non-root user
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: dockerdos
+      RATE_LIMIT: 0  # Không rate limit (để dễ DoS)
+      HTTP_TIMEOUT: 10  # Timeout 10s
+      DB_MAX_OPEN_CONNS: 30  # Trung bình - 30 connections
+      DB_MAX_IDLE_CONNS: 10  # Trung bình
+      GOMAXPROCS: 4  # 4 workers
+    ports:
+      - "0.0.0.0:8080:8080"  # v5 Backend API - bind trên tất cả interfaces
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'  # Trung bình - 1.0 CPU
+          memory: 512M  # Trung bình - 512MB RAM
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 8192  # Trung bình - 8192 file descriptors
+        hard: 8192
+    # v5: Chạy với non-root user
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=http://172.16.142.128:8080
+    container_name: dockerdos-v5-frontend
+    ports:
+      - "0.0.0.0:80:80"  # v5 Frontend - bind trên tất cả interfaces
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'  # Trung bình - 0.5 CPU
+          memory: 256M  # Trung bình - 256MB RAM
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 4096
+        hard: 4096

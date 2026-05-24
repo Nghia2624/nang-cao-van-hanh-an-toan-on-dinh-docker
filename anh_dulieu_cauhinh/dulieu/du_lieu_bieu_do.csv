@@ -1,0 +1,6 @@
+Version,Tên,Requests_trước_sụp_đổ,Thời_gian_đến_sụp_đổ_giây,Thời_gian_đến_sụp_đổ_phút,Thời_gian_hiển_thị,Requests_per_second,Failed_requests,Failed_percent,Time_per_request_ms,CPU_percent,Memory_percent
+V1,V1 - Cực Yếu,780,180,3,3 phút,11.7,285,28.5,4275,98.5,95.2
+V2,V2 - Yếu,850,200,3.33,3 phút 20 giây,13.8,198,19.8,3615,95.8,95.7
+V3,V3 - Yếu Hơn,900,220,3.67,3 phút 40 giây,17.2,125,12.5,2910,96.2,96.9
+V4,V4 - Trung Bình Thấp,950,240,4.0,4 phút,23.4,78,7.8,2140,94.5,94.7
+V5,V5 - Trung Bình,980,260,4.33,4 phút 20 giây,35.1,32,3.2,1425,92.3,96.7

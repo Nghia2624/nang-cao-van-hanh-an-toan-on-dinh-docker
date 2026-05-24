@@ -1,0 +1,196 @@
+# Production Docker Compose
+# Usage: docker compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+# - Create a .env file from .env.example with production values
+# - Ensure Docker and Docker Compose are installed
+
+services:
+  backend:
+    image: ghcr.io/${GITHUB_REPOSITORY:-nghia/dockerai}/backend:latest
+    container_name: dockerai-backend
+    restart: always
+    user: "0:0"
+    environment:
+      - APP_PORT=8080
+      - APP_API_KEY=${APP_API_KEY}
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017}
+      - MONGO_DB=${MONGO_DB:-dockerai}
+      - PROMETHEUS_URL=http://prometheus:9090
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AI_ENDPOINT=${AI_ENDPOINT}
+      - AI_MODEL=${AI_MODEL:-gemini-2.5-flash}
+      - AI_API_KEYS=${AI_API_KEYS}
+      - LOG_LEVEL=${LOG_LEVEL:-warn}
+    ports:
+      - "127.0.0.1:8080:8080"  # Only expose to localhost (reverse proxy will handle external)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    depends_on:
+      mongo:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+    networks:
+      - monitor
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  mongo:
+    image: mongo:7.0
+    container_name: dockerai-mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DB:-dockerai}
+    ports:
+      - "127.0.0.1:27018:27017"
+    volumes:
+      - mongo_data:/data/db
+      - mongo_config:/data/configdb
+    networks:
+      - monitor
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: dockerai-prometheus
+    restart: always
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --storage.tsdb.retention.size=50GB
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    networks:
+      - monitor
+    depends_on:
+      - cadvisor
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: dockerai-cadvisor
+    restart: always
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - monitor
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  frontend:
+    image: ghcr.io/${GITHUB_REPOSITORY:-nghia/dockerai}/frontend:latest
+    container_name: dockerai-frontend
+    restart: always
+    ports:
+      - "127.0.0.1:3000:80"  # Only expose to localhost
+    networks:
+      - monitor
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Cloudflare Tunnel container (free HTTPS + DNS)
+  # Fill in your tunnel token in CLOUDFLARE_TUNNEL_TOKEN
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: dockerai-cloudflared
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - monitor
+    depends_on:
+      - frontend
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+volumes:
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
+  prometheus_data:
+    driver: local
+
+networks:
+  monitor:
+    driver: bridge

@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dockerdos-v1-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dockerdos
+      POSTGRES_MAX_CONNECTIONS: 5  # Cực yếu - chỉ 5 connections
+    volumes:
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ../database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "0.0.0.0:5439:5432"  # v1 PostgreSQL
+    # v1: CỰC YẾU - Không giới hạn tài nguyên (unlimited)
+    # v1: Không healthcheck
+    # v1: Không ulimits
+    # v1: Chạy với quyền root (default)
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: dockerdos-v1-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: dockerdos
+      RATE_LIMIT: 0  # Không rate limit
+      HTTP_TIMEOUT: 0  # Không timeout
+      DB_MAX_OPEN_CONNS: 5  # Cực yếu - chỉ 5 connections
+      DB_MAX_IDLE_CONNS: 1  # Cực yếu
+      GOMAXPROCS: 1  # Chỉ 1 worker
+    ports:
+      - "0.0.0.0:8080:8080"  # v1 Backend API - bind trên tất cả interfaces
+    depends_on:
+      - postgres
+    # v1: CỰC YẾU - Không giới hạn tài nguyên
+    # v1: Không healthcheck
+    # v1: Không ulimits
+    # v1: Chạy với quyền root (default)
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=http://172.16.142.128:8080
+    container_name: dockerdos-v1-frontend
+    ports:
+      - "0.0.0.0:80:80"  # v1 Frontend - bind trên tất cả interfaces
+    depends_on:
+      - backend
+    # v1: CỰC YẾU - Không giới hạn tài nguyên
+    # v1: Không healthcheck
