@@ -1,11 +1,7 @@
-<div align="center">
-    <p align="center">
-        <img src="anh_dulieu_cauhinh/dnu_logo.png" alt="DaiNam University Logo" width="200"/>
-    </p>
 <h2 align="center">
     🎓 Khoa Công nghệ Thông tin (Đại học Đại Nam)
 </h2>
-</div>
+
 <h2 align="center">
     ĐỒ ÁN TỐT NGHIỆP
 </h2>
