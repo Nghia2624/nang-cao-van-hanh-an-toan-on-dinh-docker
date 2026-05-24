@@ -1,321 +1,111 @@
-# DockerAI - Intelligent Container Monitoring Dashboard
+<h2 align="center">
+    <a href="https://dainam.edu.vn/vi/khoa-cong-nghe-thong-tin">
+    🎓 Khoa Công nghệ Thông tin (Đại học Đại Nam)
+    </a>
+</h2>
+<h2 align="center">
+    ĐỒ ÁN TỐT NGHIỆP
+</h2>
+<h3 align="center">
+    ĐỀ TÀI: NGHIÊN CỨU NÂNG CAO MỨC ĐỘ AN TOÀN TRONG VẬN HÀNH DOCKER
+</h3>
+<div align="center">
+    <p align="center">
+        <img src="https://dainam.edu.vn/uploads/images/D%E1%BA%A1i%20Nam%20-%20Logo-%20chu%E1%BA%A9n-04(3).png" alt="DaiNam University Logo" width="200"/>
+    </p>
 
-Production-ready Docker container monitoring system with AI-powered log analysis, built with Go backend and React TypeScript frontend.
+[![Khoa Công nghệ Thông tin](https://img.shields.io/badge/Khoa%20Công%20nghệ%20Thông%20tin-blue?style=for-the-badge)](https://dainam.edu.vn/vi/khoa-cong-nghe-thong-tin)
+[![Đại học Đại Nam](https://img.shields.io/badge/Đại%20học%20Đại%20Nam-orange?style=for-the-badge)](https://dainam.edu.vn)
 
-## 🎯 Features
+</div>
 
-- **Real-time Container Monitoring**: Monitor all containers with sub-second latency
-- **AI-Powered Log Analysis**: Automatic root cause analysis using Google Gemini AI
-- **Intelligent Alerting**: Context-aware alerts with severity scoring
-- **Metrics Visualization**: CPU, Memory, Network, Disk I/O metrics with time-series charts
-- **Advanced Log Viewer**: Filter, search, highlight with real-time streaming
-- **Health Scoring**: Automated container health assessment
-- **Pattern Recognition**: Detect repetitive errors, spikes, cascading failures
-- **Production Ready**: Health checks, graceful shutdown, resource limits, security headers
+## 📖 1. Giới thiệu
+**Dashboard** là một hệ thống giám sát container trực quan, hỗ trợ người quản trị trong việc theo dõi, đánh giá và đảm bảo an toàn cho hệ thống Docker. Dashboard được phát triển như một phần của đồ án tốt nghiệp với đề tài **"Nghiên cứu nâng cao mức độ an toàn trong vận hành Docker"**, hướng đến mục tiêu tối ưu hóa khả năng quản lý và bảo mật trong môi trường container hóa. Hệ thống tích hợp phân tích log bằng AI (Google Gemini), đưa ra các cảnh báo an toàn và đánh giá tình trạng container theo thời gian thực, từ đó giúp người quản trị nhanh chóng phát hiện các bất thường và nâng cao tính ổn định cho hệ thống.
 
-## 🏗️ Architecture
+## 🔧 2. Các công nghệ được sử dụng
+<div align="center">
 
-```
-┌─────────────────┐
-│  React Frontend │ (Port 3000)
-└────────┬────────┘
-         │ REST API / SSE
-┌────────▼────────┐
-│  Go Backend     │ (Port 8080)
-└───┬──────┬──────┘
-    │      │
-┌───▼──┐ ┌─▼────────┐ ┌─────────┐
-│Docker│ │Prometheus│ │ MongoDB │
-└───┬──┘ └────┬─────┘ └─────────┘
-    │         │
-┌───▼─────────▼──┐
-│   cAdvisor     │
-└────────────────┘
-```
+### Hệ điều hành
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com/)
+### Backend & Frontend
+[![Go](https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+### Dữ liệu & Giám sát
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)](https://grafana.com/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+</div>
 
-## 📋 Prerequisites
+## 🎯 3. Các tính năng chính
 
-- Docker & Docker Compose
-- Docker daemon running (for container monitoring)
-- Google Gemini API keys (3 keys recommended for rotation)
+- **Giám sát Container theo thời gian thực**: Theo dõi toàn bộ trạng thái container, bao gồm CPU, Memory, Network và Disk I/O.
+- **Phân tích Log bằng AI**: Tự động phân tích nguyên nhân của lỗi bằng Google Gemini.
+- **Cảnh báo thông minh**: Hệ thống đánh giá các sự kiện sinh ra và cảnh báo khi có rủi ro.
+- **Theo dõi tình trạng**: Đánh giá tình trạng của container.
+- **Nhận diện bất thường**: Phát hiện lỗi lặp lại, lỗi đột biến tài nguyên hoặc lỗi dây chuyền.
 
-## 🚀 Quick Start
+## ⚙️ 4. Cài đặt
 
-### 1. Clone Repository
+### 4.1. Yêu cầu hệ thống
+- Môi trường đã cài đặt Docker & Docker Compose.
+- Docker daemon đang chạy trên môi trường Host.
+- Khóa API của Google Gemini (Sử dụng nhiều khóa API để thay phiên, giảm thiểu giới hạn request).
 
+### 4.2. Tải mã nguồn
 ```bash
-git clone <repository-url>
-cd DockerAI
+git clone https://github.com/Nghia2624/nang-cao-van-hanh-an-toan-on-dinh-docker.git
+cd nang-cao-van-hanh-an-toan-on-dinh-docker
 ```
 
-### 2. Configure Environment Variables
-
-Create `.env` file:
-
+### 4.3. Cấu hình biến môi trường
+Tạo tệp **.env** tại thư mục gốc với nội dung:
 ```bash
-# AI Configuration (REQUIRED)
+# Cấu hình AI (Bắt buộc)
 AI_API_KEYS=key1,key2,key3
-# OR single key:
+# HOẶC sử dụng 1 key duy nhất:
 # AI_API_KEY=your-key-here
 
-# Backend API Key (optional, for API authentication)
+# Cấu hình API Backend (Tùy chọn)
 APP_API_KEY=your-secure-api-key
 
-# Frontend API Configuration
+# Cấu hình Frontend
 VITE_API=http://localhost:8080
-VITE_API_KEY=your-secure-api-key  # Must match APP_API_KEY if set
+VITE_API_KEY=your-secure-api-key
 
-# Grafana (optional)
+# Grafana (Tùy chọn)
 GRAFANA_USER=admin
 GRAFANA_PASSWORD=admin
 
-# Log Level
 LOG_LEVEL=info
 ```
 
-### 3. Start Services
-
+### 4.4. Khởi chạy hệ thống
+Thực thi lệnh sau:
 ```bash
 docker compose up -d
 ```
-
-### 4. Access Services
-
-- **Frontend Dashboard**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **Prometheus**: http://localhost:9090
-- **Grafana**: http://localhost:3001 (admin/admin)
-- **cAdvisor**: http://localhost:8081
-
-## 📖 API Documentation
-
-### Health Check
-
-```bash
-GET /healthz
-GET /health
-```
-
-Returns detailed health status of all components.
-
-### Containers
-
-```bash
-GET /api/v1/containers              # List all containers
-GET /api/v1/containers/:id         # Get container details
-```
-
-### Metrics
-
-```bash
-GET /api/v1/metrics/system                    # System overview
-GET /api/v1/metrics/container/:id/cpu         # CPU metrics (timeseries)
-GET /api/v1/metrics/container/:id/memory     # Memory metrics (timeseries)
-```
-
-### Logs
-
-```bash
-GET /api/v1/logs?container=:id&level=ERROR&from=:ts&to=:ts&limit=100
-GET /api/v1/logs/stream?container=:id        # SSE stream
-```
-
-### Alerts
-
-```bash
-GET /api/v1/alerts?status=NEW
-POST /api/v1/alerts/:id/acknowledged
-POST /api/v1/alerts/:id/resolved
-```
-
-### AI Insights
-
-```bash
-GET /api/v1/ai/analyses
-POST /api/v1/ai/analyze
-```
-
-## 🔧 Configuration
-
-### Backend Configuration
-
-All backend configuration via environment variables:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `APP_PORT` | `8080` | Backend HTTP port |
-| `APP_API_KEY` | - | API key for authentication |
-| `MONGO_URI` | `mongodb://mongo:27017` | MongoDB connection string |
-| `MONGO_DB` | `dockerai` | MongoDB database name |
-| `PROMETHEUS_URL` | `http://prometheus:9090` | Prometheus URL |
-| `DOCKER_HOST` | `unix:///var/run/docker.sock` | Docker daemon socket |
-| `AI_ENDPOINT` | Gemini API endpoint | Gemini API endpoint |
-| `AI_MODEL` | `gemini-1.5-flash` | Gemini model name |
-| `AI_API_KEYS` | - | Comma-separated API keys (recommended) |
-| `AI_API_KEY` | - | Single API key (fallback) |
-| `LOG_LEVEL` | `info` | Log level (debug/info/warn/error) |
-
-### Frontend Configuration
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API` | `http://localhost:8080` | Backend API URL |
-| `VITE_API_KEY` | - | API key (must match APP_API_KEY) |
-
-## 🏭 Production Deployment
-
-### 1. Security Checklist
-
-- [ ] Set strong `APP_API_KEY` and `VITE_API_KEY`
-- [ ] Configure MongoDB authentication
-- [ ] Use HTTPS (reverse proxy with nginx/traefik)
-- [ ] Set resource limits in docker-compose.yml
-- [ ] Enable Grafana authentication
-- [ ] Rotate AI API keys regularly
-- [ ] Monitor resource usage
-
-### 2. Resource Requirements
-
-Minimum:
-- CPU: 4 cores
-- RAM: 8GB
-- Disk: 100GB (for logs and metrics)
-
-Recommended:
-- CPU: 8 cores
-- RAM: 16GB
-- Disk: 500GB SSD
-
-### 3. Scaling
-
-- **Backend**: Scale horizontally (multiple instances behind load balancer)
-- **MongoDB**: Use replica set for high availability
-- **Prometheus**: Consider remote storage for long retention
-- **Frontend**: CDN for static assets
-
-### 4. Monitoring
-
-The system monitors itself:
-- Backend health: `/healthz`
-- Container metrics via cAdvisor
-- Application logs in MongoDB
-
-### 5. Backup Strategy
-
-```bash
-# MongoDB backup
-docker exec dockerai-mongo mongodump --out /backup
-
-# Prometheus data (if using volumes)
-docker exec dockerai-prometheus tar czf /backup/prometheus.tar.gz /prometheus
-```
-
-## 🛠️ Development
-
-### Backend Development
-
-```bash
-cd backend
-go mod download
-go run cmd/server/main.go
-```
-
-### Frontend Development
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Running Tests
-
-```bash
-# Backend
-cd backend
-go test ./...
-
-# Frontend
-cd frontend
-npm run type-check
-```
-
-## 📊 Metrics & Observability
-
-### Prometheus Metrics
-
-- Container CPU usage
-- Container memory usage
-- Network I/O
-- Disk I/O
-- Container restarts
-- Log error rates
-
-### Grafana Dashboards
-
-Pre-configured dashboards available at:
-- http://localhost:3001/dashboards
-
-### Alert Rules
-
-Prometheus alert rules configured in `prometheus/alert_rules.yml`:
-- High CPU usage (>80% for 5min)
-- High memory usage (>90% for 5min)
-- Container restart loops
-- Container down
-
-## 🔒 Security
-
-- API key authentication
-- CORS configuration
-- Rate limiting (5 req/s, burst 20)
-- Input validation
-- Security headers (XSS protection, frame options)
-- Read-only Docker socket mount
-
-## 🐛 Troubleshooting
-
-### Backend won't start
-
-1. Check Docker socket: `ls -la /var/run/docker.sock`
-2. Verify MongoDB connection
-3. Check AI API keys are set
-4. Review logs: `docker compose logs backend`
-
-### Frontend can't connect
-
-1. Verify `VITE_API` matches backend URL
-2. Check CORS settings
-3. Verify API key matches backend
-
-### No metrics in Prometheus
-
-1. Check cAdvisor is running: `curl http://localhost:8081/healthz`
-2. Verify Prometheus targets: http://localhost:9090/targets
-3. Check scrape config in `prometheus/prometheus.yml`
-
-### AI analysis not working
-
-1. Verify API keys are valid
-2. Check rate limits (100 req/min)
-3. Review logs for AI errors
-4. Ensure sufficient quota on Gemini API
-
-## 📝 License
-
-[Your License Here]
-
-## 🤝 Contributing
-
-[Contributing Guidelines]
-
-## 📧 Support
-
-[Support Contact]
-
----
-
-**Built with ❤️ for DevOps teams**
-# nang-cao-van-hanh-an-toan-on-dinh-docker
-# nang-cao-van-hanh-an-toan-on-dinh-docker
-# nang-cao-van-hanh-an-toan-on-dinh-docker
+Sau khi chạy, bạn có thể truy cập các dịch vụ qua:
+- **Frontend Dashboard**: `http://localhost:3000`
+- **Backend API**: `http://localhost:8080`
+- **Prometheus**: `http://localhost:9090`
+- **Grafana**: `http://localhost:3001`
+- **cAdvisor**: `http://localhost:8081`
+
+## 👨‍💻 5. Thông tin Phát triển
+
+| Trường thông tin | Nội dung |
+| --- | --- |
+| 🏛️ **Trường** | Đại học Đại Nam (DaiNam University) |
+| 💻 **Khoa** | Công nghệ Thông tin |
+| 🎓 **Loại đồ án** | Đồ án tốt nghiệp |
+| 👤 **Sinh viên** | Đỗ Ngọc Nghĩa |
+| 📧 **Email** | dnghia9119@gmail.com |
+| 🌐 **Website cá nhân** | [dnnghia.vercel.app](https://dnnghia.vercel.app) |
+| 🏫 **Lớp** | CNTT 16-03 |
+| 📅 **Năm học** | 2025-2026 |
+
+<div align="center">
+© 2026 Faculty of Information Technology, DaiNam University. All rights reserved.
+</div>
