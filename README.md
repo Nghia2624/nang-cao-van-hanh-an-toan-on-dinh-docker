@@ -1,8 +1,11 @@
+<div align="center">
+    <p align="center">
+        <img src="anh_dulieu_cauhinh/dnu_logo.png" alt="DaiNam University Logo" width="200"/>
+    </p>
 <h2 align="center">
-    <a href="https://dainam.edu.vn/vi/khoa-cong-nghe-thong-tin">
     🎓 Khoa Công nghệ Thông tin (Đại học Đại Nam)
-    </a>
 </h2>
+</div>
 <h2 align="center">
     ĐỒ ÁN TỐT NGHIỆP
 </h2>
@@ -11,7 +14,7 @@
 </h3>
 <div align="center">
     <p align="center">
-        <img src="https://dainam.edu.vn/uploads/images/D%E1%BA%A1i%20Nam%20-%20Logo-%20chu%E1%BA%A9n-04(3).png" alt="DaiNam University Logo" width="200"/>
+        <img src="anh_dulieu_cauhinh/dnu_logo.png" alt="DaiNam University Logo" width="200"/>
     </p>
 
 [![Khoa Công nghệ Thông tin](https://img.shields.io/badge/Khoa%20Công%20nghệ%20Thông%20tin-blue?style=for-the-badge)](https://dainam.edu.vn/vi/khoa-cong-nghe-thong-tin)
@@ -93,7 +96,14 @@ Sau khi chạy, bạn có thể truy cập các dịch vụ qua:
 - **Grafana**: `http://localhost:3001`
 - **cAdvisor**: `http://localhost:8081`
 
-## 👨‍💻 5. Thông tin Phát triển
+## 📝 5. Công bố Khoa học
+
+Đề tài đã được công bố thành bài báo khoa học:
+- **Tên bài báo**: Giải pháp nâng cao an toàn, ổn định vận hành Docker, tích hợp LLM trong giám sát, phát hiện dấu hiệu bất thường
+- **Nơi đăng**: [Kỷ yếu Hội thảo Khoa học Quốc tế về Công nghệ và Sức khỏe số 2026 (INCOTEH)](https://ebook365.vn/ky-yeu-hoi-thao-khoa-hoc-quoc-te-ve-cong-nghe-va-suc-khoe-so-2026-international-scientific-conference-on-technology-and-digital-health-2026-rGXXZW.html)
+- **Trang**: 95-107
+
+## 👨‍💻 6. Thông tin Phát triển
 
 | Trường thông tin | Nội dung |
 | --- | --- |
